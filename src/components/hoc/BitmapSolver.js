@@ -20,33 +20,42 @@ const bitmapSolver = (WrappedComponent) => {
         }
 
         isSafe(bitMap, row, col) {
-            return ((row >= 0) && (row < bitMap.length) && (col >= 0) && (col < bitMap[0].length) && (bitMap[row][col].color === ISLAND_COLOR && !bitMap[row][col].visited));
+            return ((row >= 0) && (row < bitMap.length) && (col >= 0) && (col < bitMap[0].length) && 
+                    (bitMap[row][col].color === ISLAND_COLOR && !bitMap[row][col].visited));
         }
 
-        findIsland(bitmap, row, col, color) {
-            bitmap[row][col].visited = true;
-            bitmap[row][col].color = CSS_COLOR_NAMES[color % CSS_COLOR_NAMES.length]
 
-            for (let k = 0; k < 8; ++k) {
-                if (this.isSafe(bitmap, row + ROW_NEIGHBORS[k], col + COL_NEIGHBORS[k])) {
-                    this.findIsland(bitmap, row + ROW_NEIGHBORS[k], col + COL_NEIGHBORS[k], color);
+        async findIsland(bitmap,row,col,color) {
+            bitmap[row][col].color = CSS_COLOR_NAMES[color % CSS_COLOR_NAMES.length];
+    
+            return new Promise(async (resolve) => {
+                for (let index = 0; index <  8; index++) {
+                    const nRow = row + ROW_NEIGHBORS[index];
+                    const nCol = col + COL_NEIGHBORS[index];
+    
+                    if (this.isSafe(bitmap, nRow,nCol)) 
+                    {
+                        await this.findIsland(bitmap, nRow, nCol, color)
+                    }
                 }
-            }
-
-            return bitmap
+    
+                resolve();
+            });
         }
 
         solve = (bitmap) => {
+            return new Promise(async (resolve, reject) => {
             let counter = 0;
             for (let row = 0; row < bitmap.length; row++) {
                 for (let col = 0; col < bitmap[row].length; col++) {
                     if (!bitmap[row][col].visited && bitmap[row][col].color === ISLAND_COLOR) {
-                        bitmap = this.findIsland(bitmap, row, col, counter)
+                        await this.findIsland(bitmap, row, col, counter)
                         counter++;
                     }
                 }
             }
-            return { bitmap, counter };
+            return resolve({ bitmap, counter });
+        })
         }
 
         render() {

@@ -26,7 +26,6 @@ class Bitmap extends React.Component {
                 this.drawBit(ctx, row, col, this.props.bitmap[row][col].color)
             }
         }
-        debugger;
         if (!this.props.isRandom) {
             canvas.addEventListener('click', (event) => {
                 const elemLeft = canvas.offsetLeft + canvas.clientLeft;

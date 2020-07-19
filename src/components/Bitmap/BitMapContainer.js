@@ -19,8 +19,8 @@ class BitMapContainer extends React.Component {
         this.setState({ bitmap: bitmap, islandsAmount: -1, rows, cols });
     }
 
-    solve = () => {
-        const result = this.props.solve(this.state.bitmap);
+    solve = async () => {
+        const result = await this.props.solve(this.state.bitmap);
         this.setState({ bitmap: result.bitmap, islandsAmount: result.counter });
     }
 
